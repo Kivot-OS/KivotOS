@@ -16,7 +16,7 @@ zsh
 # A simple and easy-to-use text editor.
 nano
 # A more advanced, powerful text editor.
-neovim
+neovim micro
 # For system monitoring.
 btop fastfetch
 # For bluepm

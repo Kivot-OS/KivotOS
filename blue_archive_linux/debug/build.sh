@@ -15,15 +15,18 @@ sudo lb config noauto \
     --debian-installer live \
     --debian-installer-gui false \
     --iso-application "Blue Archive Linux" \
-    --iso-volume "Blue Archive Linux" \
-    --iso-publisher "minhmc2007" \
+    --iso-volume "KivotOS" \
+    --iso-publisher "minhmc2007, dungdinhmanh" \
     --memtest memtest86+ \
-    --bootappend-live "boot=live" \
-    --binary-images iso-hybrid
-
+    --bootappend-live "boot=live username=sensei hostname=shittim_chest" \
+    --binary-images iso-hybrid \
+    --debootstrap-options "--variant=minbase" \
+    --backports true --image-name "KivotOS" \
+    --compression xz --firmware-chroot true \
+    --clean
 echo "--- [build.sh] Starting live-build process for Trixie..."
 sudo lb build
 
 echo "--- [build.sh] Moving generated ISO..."
-mv live-image-amd64.hybrid.iso "Blue_Archive_Linux_amd64_debug_$(date +'%I-%M%p_%d-%m-%Y').iso"
+mv live-image-amd64.hybrid.iso "KivotOS_amd64_$(date +'%H%M%S_%d-%m-%Y').iso"
 echo "--- [build.sh] ISO build complete."
