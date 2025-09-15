@@ -22,8 +22,7 @@ sudo lb config noauto \
     --binary-images iso-hybrid \
     --debootstrap-options "--variant=minbase" \
     --backports true --image-name "KivotOS" \
-    --compression xz --firmware-chroot true \
-    --clean
+    --compression xz --firmware-chroot true
 echo "--- [build.sh] Starting live-build process for Trixie..."
 sudo lb build
 
