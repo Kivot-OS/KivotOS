@@ -137,8 +137,6 @@ Even though @minhmc2007 has stepped back, the spirit of Kivotos lives on. With *
 
 <br>
 
-![KivotOS Logo](/kivotos.png)
-
 **Made with 💙 by Senseis, for Senseis**
 
 _"A minimal system with maximum Blue Archive vibes"_
