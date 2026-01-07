@@ -1,7 +1,3 @@
-# KivotOS
-
-> A minimal, highly customizable Debian-based operating system inspired by the aesthetics of Blue Archive.
-
 <div align="center">
 
 ![KivotOS Logo](/kivotos.png)
@@ -9,7 +5,8 @@
 [![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge&logo=activity&logoColor=white)](https://github.com/Kivot-OS/KivotOS)
 [![Architecture](https://img.shields.io/badge/Architecture-x86__64-ff6b6b?style=for-the-badge&logo=debian&logoColor=white)](#)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](#)
-
+<br>
+A minimal, highly customizable Debian-based operating system inspired by the aesthetics of Blue Archive.
 </div>
 
 KivotOS (formerly Blue Archive Linux) is designed for users who want a lightweight, optimized system that doesn't compromise on aesthetics. **Welcome to Kivotos, Sensei.**
