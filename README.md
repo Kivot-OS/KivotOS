@@ -130,7 +130,7 @@ This project is [MIT](https://github.com/Kivot-OS/KivotOS/blob/main/LICENSE) lic
 
 Even though @minhmc2007 has stepped back, the spirit of Kivotos lives on. With **@dungdinhmanh** taking the lead, we continue to build a system crafted with passion.
 
-**— The KivotOS Team**
+**— The KivotOS Team —**
 
 <br>
 
