@@ -6,7 +6,6 @@
 -include .build_config
 
 # If BUILD_TYPE is not set by the config file, default to 'debug'.
-BUILD_TYPE ?= debug
 
 DOCKER_IMAGE   := debian:13
 CONTAINER_NAME := blue-archive-builder
