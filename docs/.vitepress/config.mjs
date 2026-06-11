@@ -18,12 +18,12 @@ export default defineConfig({
 
   themeConfig: {
     logo: '/kivotos.png',
+    siteTitle: false,
 
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Build Guide', link: '/guide/build-guide' },
-      { text: 'GitHub', link: 'https://github.com/Kivot-OS/KivotOS' },
     ],
 
     sidebar: {

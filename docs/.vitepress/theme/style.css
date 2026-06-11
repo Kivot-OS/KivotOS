@@ -163,6 +163,21 @@ body {
   line-height: 1.6;
 }
 
+/* Disable text selection site-wide; keep form fields usable */
+*,
+::before,
+::after {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 h1, h2, h3, h4,
 .VPHomeHero .name,
 .VPHomeHero .text,
@@ -244,8 +259,15 @@ h1, h2, h3, h4,
 }
 
 .VPFeatures .item .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--kgradient);
   border-radius: var(--radius-md);
+}
+
+.VPFeatures .item .icon img {
+  filter: none;
 }
 
 .VPFeatures .item .title {
