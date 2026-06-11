@@ -1,0 +1,20 @@
+# Netlify config for the KivotOS docs site.
+# This file lives inside docs/ — set Netlify "Base directory" to `docs`
+# in the dashboard (Site settings > Build & deploy) so it is picked up.
+# Paths below are relative to docs/ (the base directory).
+
+[build]
+  command = "bun install && bun run build"
+  publish = ".vitepress/dist"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -39,20 +39,21 @@ git clone https://github.com/Kivot-OS/KivotOS.git
 cd KivotOS
 ```
 
-**2. Build Method A: Shell Script**
+**2. Quick Build (native)**
 
 ```bash
-sudo bash build.sh
+# On Debian 13+:
+sudo apt install live-build git
+make build
 ```
 
-**3. Build Method B: Makefile (Dockerized)**
+**3. Build with Docker or nspawn**
 
-Ensure you have Docker installed and running. Please refer to the [official Docker documentation](https://docs.docker.com/get-docker/) for installation instructions specific to your OS.
+See the [Build Guide](docs/guide/build-guide.md) for Docker, nspawn, and other build methods.
 
 ```bash
-# Once Docker is running:
-make menuconfig
-make
+# Preview build options:
+make help
 ```
 
 **4. Post-Install**

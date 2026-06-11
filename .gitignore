@@ -1,0 +1,7 @@
+# Tooling / agent workspaces
+.omo/
+.opencode/
+thoughts/
+
+# Build output
+builds/

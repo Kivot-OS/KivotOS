@@ -1,147 +1,122 @@
-# Makefile for building Blue Archive Linux ISO inside a Docker container
-# This Makefile is self-contained and does not require any external shell scripts.
-# Plz note that if you run sudo make so the iso will be inside /root
-# --- Configuration ---
-# Load the build configuration. It can be set via 'make menuconfig'.
--include .build_config
+# KivotOS Build System
+#
+# Build KivotOS ISO images using live-build.
+# The live-build configuration lives in the kivotos/ directory.
+#
+# Usage:
+#   make help        - Show this help
+#   make build       - Build ISO (native, requires live-build)
+#   make docker-build - Build ISO in Docker
+#   make nspawn-build - Build ISO in Debian nspawn container
+#   make clean       - Clean build artifacts
+#   make deep-clean  - Full cleanup including output ISOs
+#   make serve-docs  - Preview docs site locally
 
-# If BUILD_TYPE is not set by the config file, default to 'debug'.
+LB_ROOT   := ./kivotos
+ISO_DIR   := ./builds
+ARCH      := amd64
+DATE      := $(shell date +%Y-%m-%d)
 
-DOCKER_IMAGE   := debian:13
-CONTAINER_NAME := blue-archive-builder
+.PHONY: all build docker-build nspawn-build clean deep-clean serve-docs help
 
-# Use the current working directory for the temporary output
-ISO_OUTPUT_DIR := $(PWD)/iso_output
-FINAL_ISO_NAME := Blue_Archive_Linux_amd64-$(BUILD_TYPE).iso
+# Default: show help
+all: help
 
-# Define the multi-line shell command to be executed inside Docker.
-# Using '$$' escapes the dollar sign for make, passing a single '$' to the shell.
-# We use 'set -e' to make the script exit immediately if any command fails.
-DOCKER_COMMAND = \
-	set -e; \
-	\
-	echo "--- [Docker] Installing dependencies: live-build, git, etc. ---"; \
-	apt-get update >/dev/null && apt-get install -y sudo live-build git >/dev/null; \
-	\
-	echo "--- [Docker] Cloning repository... ---"; \
-	git clone https://github.com/minhmc2007/Blue-Archive-Linux /build_dir; \
-	cd /build_dir; \
-	\
-	if [ "$(BUILD_TYPE)" = "stable" ]; then \
-		echo "--- [Docker] Entering STABLE build directory... ---"; \
-		cd blue_archive_linux/stable; \
-	else \
-		echo "--- [Docker] Entering DEBUG build directory... ---"; \
-		cd blue_archive_linux/debug; \
-	fi; \
-	\
-	echo "--- [Docker] Executing build.sh... This is the longest step. ---"; \
-	./build.sh; \
-	\
-	echo "--- [Docker] Moving generated ISO to output volume... ---"; \
-	mv Blue_Archive_Linux_amd64*.iso /output/final.iso; \
-	\
-	echo "--- [Docker] Build process finished successfully. Exiting container. ---";
+# --- Native Build ---
 
-# --- Targets ---
-.PHONY: all build menuconfig clean help
-
-# Default target
-all: build
-
-# The interactive configuration target
-menuconfig:
-	@echo "=========================================================="
-	@echo "  Blue Archive Linux Build Configuration"
-	@echo "=========================================================="
-	@echo "  Current Build Type: $(BUILD_TYPE)"
-	@echo ""
-	@echo "  Select the build type you want to configure:"
-	@echo "    1. Stable (Recommended for general use)"
-	@echo "    2. Debug  (For development and testing)"
-	@echo ""
-	@read -p "  Enter your choice [1-2]: " choice; \
-	case "$$choice" in \
-		1) \
-			echo "BUILD_TYPE := stable" > .build_config; \
-			echo "==> Configuration set to: stable"; \
-			;; \
-		2) \
-			echo "BUILD_TYPE := debug" > .build_config; \
-			echo "==> Configuration set to: debug"; \
-			;; \
-		*) \
-			echo "!!! Invalid choice. No changes were made."; \
-			;; \
-	esac
-	@echo "=========================================================="
-	@echo "Run 'make' to start the build with the new configuration."
-
-
-# The main build process
-
-
-# The main build process
 build:
-	@echo "=========================================================="
-	@echo ">>> Starting Blue Archive Linux ISO build"
-	@echo ">>> Build Type: $(BUILD_TYPE)"
-	@echo "=========================================================="
+	@echo "============================================================"
+	@echo "  KivotOS ISO Build (native)"
+	@echo "  Using config: $(LB_ROOT)/auto/config"
+	@echo "============================================================"
+	@echo ""
+	@echo "[1/4] Cleaning previous build..."
+	cd $(LB_ROOT) && sudo lb clean --purge
+	@echo ""
+	@echo "[2/4] Configuring build environment..."
+	cd $(LB_ROOT) && sudo lb config
+	@echo ""
+	@echo "[3/4] Building ISO (this will take a while)..."
+	cd $(LB_ROOT) && sudo lb build
+	@echo ""
+	@echo "[4/4] Moving ISO to $(ISO_DIR)/..."
+	mkdir -p $(ISO_DIR)
+	mv $(LB_ROOT)/KivotOS-amd64.hybrid.iso $(ISO_DIR)/KivotOS-$(DATE)-$(ARCH).hybrid.iso
+	@echo ""
+	@echo "============================================================"
+	@echo "  Build complete!"
+	@echo "  ISO: $(ISO_DIR)/KivotOS-$(DATE)-$(ARCH).hybrid.iso"
+	@echo "============================================================"
 
-	# 1. Prepare the host output directory
-	@echo "\n[STEP 1/4] Preparing output directory..."
-	rm -rf $(ISO_OUTPUT_DIR)
-	mkdir -p $(ISO_OUTPUT_DIR)
+# --- Docker Build ---
 
-	# 2. Run the Docker container and execute the build commands directly.
-	@echo "\n[STEP 2/4] Pulling Docker image and starting the build process..."
-	@echo "         This will take a very long time. Please be patient."
-	docker run \
-		--rm \
-		--name $(CONTAINER_NAME) \
-		--privileged \
-		-v "$(ISO_OUTPUT_DIR):/output" \
-		$(DOCKER_IMAGE) \
-		bash -c '$(DOCKER_COMMAND)'
-
-
-
-	# 3. Copy the final ISO from the output directory to the home directory.
-	@echo "\n[STEP 3/4] Copying generated ISO to your home directory (~/)..."
-	@if [ ! -f "$(ISO_OUTPUT_DIR)/final.iso" ]; then \
-		echo ""; \
-		echo "!!! BUILD FAILED: No ISO file was found in the output directory." ; \
-		echo "!!! Please check the logs above for errors." ; \
+docker-build:
+	@echo "============================================================"
+	@echo "  KivotOS ISO Build (Docker)"
+	@echo "============================================================"
+	@echo ""
+	@if ! command -v docker >/dev/null 2>&1; then \
+		echo "ERROR: docker not found. Install Docker first."; \
 		exit 1; \
 	fi
-	mv $(ISO_OUTPUT_DIR)/final.iso ~/$(FINAL_ISO_NAME)
-	@echo ">>> Success! ISO moved to: ~/$(FINAL_ISO_NAME)"
+	@echo "No Dockerfile yet. Run native build or set up a Dockerfile."
+	@echo "See docs/BUILD.md for details."
+	@exit 1
 
-	# 4. Clean up the temporary build directory on the host.
-	@echo "\n[STEP 4/4] Cleaning up temporary files..."
-	rm -rf $(ISO_OUTPUT_DIR)
-	@echo "\n=========================================================="
-	@echo ">>> Build complete!"
-	@echo "=========================================================="
+# --- nspawn Build (per AGENTS.md) ---
 
-# Target for cleaning up all generated files
+nspawn-build:
+	@echo "============================================================"
+	@echo "  KivotOS ISO Build (nspawn)"
+	@echo "============================================================"
+	@echo ""
+	@if ! command -v systemd-nspawn >/dev/null 2>&1; then \
+		echo "ERROR: systemd-nspawn not found. Install systemd-container."; \
+		exit 1; \
+	fi
+	@echo "nspawn build requires manual Debian container setup."
+	@echo "See docs/BUILD.md for instructions."
+	@echo "TL;DR: sudo debootstrap trixie /var/lib/machines/kivotos-build &&"
+	@echo "  sudo systemd-nspawn -D /var/lib/machines/kivotos-build"
+	@echo "  # inside: apt install live-build git && make build"
+
+# --- Cleanup ---
+
 clean:
-	@echo ">>> Cleaning up generated ISOs from home directory..."
-	rm -f ~/blue-archive-debug.iso ~/blue-archive-stable.iso
-	@echo ">>> Cleaning up temporary build directory..."
-	rm -rf $(ISO_OUTPUT_DIR)
-	@echo ">>> Cleaning up build configuration file..."
-	rm -f .build_config
-	@echo ">>> Cleanup complete."
+	@echo "Cleaning build artifacts..."
+	cd $(LB_ROOT) && sudo lb clean --purge
+	@echo "Done."
 
-# Help target to show usage
+deep-clean: clean
+	@echo "Removing output ISOs..."
+	rm -rf $(ISO_DIR)
+	@echo "Done."
+
+# --- Docs ---
+
+serve-docs:
+	@echo "Installing VitePress dependencies..."
+	cd docs && bun install
+	@echo ""
+	@echo "Starting docs dev server at http://localhost:8080"
+	@echo "Press Ctrl+C to stop."
+	cd docs && bun run dev --port 8080
+
+# --- Help ---
+
 help:
-	@echo "Usage:"
-	@echo "  make menuconfig - Interactively choose between 'stable' and 'debug' builds."
-	@echo "                    Your choice is saved in a '.build_config' file."
+	@echo "KivotOS Build System"
 	@echo ""
-	@echo "  make            - Builds the ISO using the type set in '.build_config'."
-	@echo "  make build      - (Defaults to 'debug' if menuconfig has not been run)."
+	@echo "Targets:"
+	@echo "  make            - Show this help"
+	@echo "  make build      - Build ISO natively (requires live-build)"
+	@echo "  make docker-build - Build ISO in Docker (requires Dockerfile)"
+	@echo "  make nspawn-build - Build ISO in Debian nspawn container"
+	@echo "  make clean      - Clean build artifacts"
+	@echo "  make deep-clean - Full cleanup including output ISOs"
+	@echo "  make serve-docs - Preview docs at http://localhost:8080"
 	@echo ""
-	@echo "  make clean      - Removes generated ISOs, temporary directories, and the"
-	@echo "                    .build_config file."
+	@echo "Config: $(LB_ROOT)/auto/config"
+	@echo "Output: $(ISO_DIR)/KivotOS-$(DATE)-$(ARCH).hybrid.iso"
+	@echo ""
+	@echo "Build docs: docs/guide/build-guide.md"
