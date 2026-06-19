@@ -1,0 +1,10 @@
+live-boot
+live-boot-initramfs-tools
+live-config
+live-config-systemd
+linux-image-amd64
+firmware-linux
+systemd
+systemd-sysv
+dbus
+network-manager
