@@ -66,16 +66,11 @@ sudo apt install kivotos-kde-plasma
 ```
 
 ## Authors
-
-👤 **Quang Minh**
-
-- GitHub: [@minhmc2007](https://github.com/minhmc2007)
-- Role: Creator (Retired/Archived)
-
-👤 **Đinh Mạnh Dũng**
-
-- GitHub: [@dungdinhmanh](https://github.com/dungdinhmanh)
-- Role: **Current Lead Maintainer** & Co-Developer
+<div align="center">
+<a href="https://github.com/Kivot-OS/KivotOS/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Kivot-OS/KivotOS" />
+</a>
+</div>
 
 ## 🤝 Contributing
 
